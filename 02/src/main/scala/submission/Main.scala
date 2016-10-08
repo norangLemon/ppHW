@@ -12,7 +12,12 @@ object main {
    Exercise 1: IList Map
    Write a map function that applies gives function to all elements of given IList.
    */
-  def map(xs: IList)(f: Int => Int): IList = ???
+  def map(xs: IList)(f: Int => Int): IList =
+  xs match {
+    case INil => INil
+    case ICons(hd, tl) => ICons(f(hd), map(tl)(f))
+  }
+
 
   /*
    Exercise 2: IList Reverse
