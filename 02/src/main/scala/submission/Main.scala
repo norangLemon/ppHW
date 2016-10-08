@@ -45,5 +45,11 @@ object main {
   case class EAdd(lhs: Exp, rhs: Exp) extends Exp
   case class ESub(lhs: Exp, rhs: Exp) extends Exp
   case class EMul(lhs: Exp, rhs: Exp) extends Exp
-  def calculate(x: Exp): Int = ???
+  def calculate(x: Exp): Int =
+    x match {
+      case EInt(i) => i
+      case EAdd(l, r) => calculate(l) + calculate(r)
+      case ESub(l, r) => calculate(l) - calculate(r)
+      case EMul(l, r) => calculate(l) * calculate(r)
+    }
 }
