@@ -54,68 +54,68 @@ object main {
       else ppascal(r-1, c) + 2 * ppascal(r-1 ,c-1)
     }
 
-    /*
-     Exercise 2: Fibonacci
-     A) Given n, calculate n'th value of Fibonacci number. (https://en.wikipedia.org/wiki/Fibonacci_number)
-     Having exponential time complexity is OK for this problem.
-     You may assume 1 <= n <= 20.
-     */
+  /*
+   Exercise 2: Fibonacci
+   A) Given n, calculate n'th value of Fibonacci number. (https://en.wikipedia.org/wiki/Fibonacci_number)
+   Having exponential time complexity is OK for this problem.
+   You may assume 1 <= n <= 20.
+   */
     def fibA(n: Int): Int = {
       if(n == 1 || n == 2) 1
       else fibA(n-1) + fibA(n-2)
     }
 
+  /*
+   B) Same with a), but you should implement it faster.
+   Having exponential time complexity is NOT OK for this problem.
+   Your algorithm should take linear time complexity.
+   You may assume 1 <= n <= 10^3.
+   */
+  def fibB(n: Int): BigInt = {
     /*
-     B) Same with a), but you should implement it faster.
-     Having exponential time complexity is NOT OK for this problem.
-     Your algorithm should take linear time complexity.
-     You may assume 1 <= n <= 10^3.
+     This skeleton code is just for hint. You may implement this problem in your own way.
+     n := index for Fibonacci number, n >= 2
+     output := (n-1)'th Fibonacci number and n'th Fibonacci number
      */
-    def fibB(n: Int): BigInt = {
-      /*
-       This skeleton code is just for hint. You may implement this problem in your own way.
-       n := index for Fibonacci number, n >= 2
-       output := (n-1)'th Fibonacci number and n'th Fibonacci number
-       */
-      /*
-       You can implement remaining parts without knowledge of pair type.
-       If you want to know more about pair/tuple, search "scala tuple" on google.
-       In short, you can build tuple with "(_, _, _, .. _,)" syntax,
-       and get n'th element with "._n".
-       */
-      def _fibB(n: Int): (BigInt, BigInt) = {
-        if(n == 3) (1, 1)
-        else {
-          val (pastPast, past) = _fibB(n - 1)
-          (past, past + pastPast)
-        }
-      }
-      if (n == 1 || n == 2) 1
+    /*
+     You can implement remaining parts without knowledge of pair type.
+     If you want to know more about pair/tuple, search "scala tuple" on google.
+     In short, you can build tuple with "(_, _, _, .. _,)" syntax,
+     and get n'th element with "._n".
+     */
+    def _fibB(n: Int): (BigInt, BigInt) = {
+      if(n == 3) (1, 1)
       else {
-        val result = _fibB(n)
-        result._1 + result._2
+        val (pastPast, past) = _fibB(n - 1)
+        (past, past + pastPast)
+      }
+    }
+    if (n == 1 || n == 2) 1
+    else {
+      val result = _fibB(n)
+      result._1 + result._2
       }
     }
 
+  /*
+   C) Same with b), but you should implement it with tail recursion.
+   By using tail recursion strategy, your algorithm will not take linear stack depth.
+   Instead it will only take constant stack depth.
+   You may assume 1 <= n <= 10^5.
+   */
+  def fibC(n: Int): BigInt = {
     /*
-     C) Same with b), but you should implement it with tail recursion.
-     By using tail recursion strategy, your algorithm will not take linear stack depth.
-     Instead it will only take constant stack depth.
-     You may assume 1 <= n <= 10^3.
+     This skeleton code is just for hint. You may implement this problem in your own way.
+     idx := current index
+     current := Fibonacci number for idx.
+     past := Fibonacci number for idx-1.
+     output := n'th Fibonacci number
      */
-    def fibC(n: Int): BigInt = {
-      /*
-       This skeleton code is just for hint. You may implement this problem in your own way.
-       idx := current index
-       current := Fibonacci number for idx.
-       past := Fibonacci number for idx-1.
-       output := n'th Fibonacci number
-       */
-      @tailrec
-      def _fibC(idx: Int, current: BigInt, past: BigInt): BigInt = {
-      if (idx <= 2) current
+    @tailrec
+    def _fibC(idx: Int, current: BigInt, past: BigInt): BigInt = {
+        if (idx <= 2) current
         else _fibC(idx-1, current+past, current)
-      }
-      _fibC(n, 1, 1)
+    }
+    _fibC(n, 1, 1)
   }
 }
