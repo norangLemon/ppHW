@@ -6,7 +6,7 @@
 
 1. 숙제 번호에 해당되는 디렉토리로 이동한다.
 2. `sbt compile` 
-3.  `sbt test`
+3. `sbt test`
 
 ### [List](https://github.com/snu-sf-class/pp201602)
 
@@ -17,3 +17,8 @@
 | 10/04     | 10/17 23:59 | 10/24 23:59 | Polymorphism     | TBA    |
 | 10/08     | 10/24 23:59 | 10/31 23:59 | Subtype          | TBA    |
 
+
+
+### [Submission](http://147.46.219.145:8101/)
+
+* submission 디렉토리를 통째로 압축 후 제출
