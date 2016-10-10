@@ -1,5 +1,6 @@
 import org.scalatest._
-import main._
+import submission.main._
+import Data._
 
 class TestSuite extends FunSuite {
   def listIntToIList(xs: List[Int]): IList =
