@@ -22,3 +22,6 @@ project/plugins/project/
 .worksheet
 .idea
 *.iml
+
+# Submission file
+submission.zip
