@@ -1,3 +1,5 @@
+package submission
+import Data.DataBundle._
 /*
  Implement below functions, which is currently blank. (???)
  Before asking for clarification of problem statement, look through test data.
@@ -5,16 +7,11 @@
 
 object main {
 
-  sealed abstract class MyList[+A]
-  case object MyNil extends MyList[Nothing]
-  case class MyCons[A](hd: A, tl: MyList[A]) extends MyList[A]
-
   /*
    Exercise 1: Stack and Queue
    Implement Stack / Queue functions.
    Queue can be implemented with two stacks, in purely functional way.
    */
-  type Stack[A] = MyList[A]
 
   val mtStk = MyNil
 
@@ -34,8 +31,6 @@ object main {
    then into B. And then pop an element from B.
    Or you may further optimize this by merging only when needed.
    */
-  type Queue[A] = (Stack[A], Stack[A])
-
   val mtQ = (mtStk, mtStk)
 
   def enQ[A](q: Queue[A])(a: A): Queue[A] = ???
@@ -64,12 +59,6 @@ object main {
      if the key exists -> Some(vale)
      else -> None
    */
-  sealed abstract class BTree[+A]
-  case object Leaf extends BTree[Nothing]
-  case class Node[A](value: A, left: BTree[A], right: BTree[A]) extends BTree[A]
-
-  type BST[K, V] = BTree[(K, V)]
-
   def mtBST[K, V]: BST[K, V] = Leaf
 
   def insert[K, V]

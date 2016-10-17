@@ -1,3 +1,4 @@
+package submission
 import main._
 
 object Test extends App {
