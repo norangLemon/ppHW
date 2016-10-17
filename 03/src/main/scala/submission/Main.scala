@@ -1,5 +1,7 @@
 package submission
 import Data.DataBundle._
+
+import scala.annotation.tailrec
 /*
  Implement below functions, which is currently blank. (???)
  Before asking for clarification of problem statement, look through test data.
@@ -15,12 +17,16 @@ object main {
 
   val mtStk = MyNil
 
-  def push[A](stk: Stack[A])(a: A): Stack[A] = ???
+  def push[A](stk: Stack[A])(a: A): Stack[A] = MyCons[A](a, stk)
 
-  def pop[A](stk: Stack[A]): Option[(A, Stack[A])] = ???
+  def pop[A](stk: Stack[A]): Option[(A, Stack[A])] =
+    stk match {
+      case MyCons(hd, tl) => Some(hd, tl)
+      case MyNil => None
+    }
 
   def pushList[A](seed: Stack[A])(as: List[A]): Stack[A] =
-     as.foldLeft(seed)((stk, a) => push(stk)(a))
+    as.foldLeft(seed)((stk, a) => push(stk)(a))
 
   /*
    Queue can be implemented using two stacks, efficiently.
@@ -33,12 +39,26 @@ object main {
    */
   val mtQ = (mtStk, mtStk)
 
-  def enQ[A](q: Queue[A])(a: A): Queue[A] = ???
+  def enQ[A](q: Queue[A])(a: A): Queue[A] = {
+    (push[A](q._1)(a), q._2)
+  }
 
   def enQList[A](seed: Queue[A])(as: List[A]): Queue[A] =
-     as.foldLeft(seed)((q, a) => enQ(q)(a))
+    as.foldLeft(seed)((q, a) => enQ(q)(a))
 
-  def deQ[A](q: Queue[A]): Option[(A, Queue[A])] = ???
+  def deQ[A](q: Queue[A]): Option[(A, Queue[A])] = {
+    @tailrec
+    def move(q: Queue[A]): Queue[A] =
+      q._1 match {
+        case MyNil => q
+        case MyCons(hd, tl) => move(tl, push(q._2)(hd))
+      }
+    val retQ = if (q._2 == MyNil) { move(q) } else { q }
+    pop(retQ._2) match{
+      case None => None
+      case Some((value, stk)) => Some(value, (retQ._1, stk))
+    }
+  }
 
   /*
    Exercise 2: Binary Search Tree
@@ -62,11 +82,29 @@ object main {
   def mtBST[K, V]: BST[K, V] = Leaf
 
   def insert[K, V]
-    (t: BST[K, V])(keyValue: (K, V))(cmp: K => K => Int): BST[K, V] = ???
+    (t: BST[K, V])(keyValue: (K, V))(cmp: K => K => Int): BST[K, V] =
+    t match {
+      case Leaf => {
+        Node(keyValue, Leaf, Leaf)
+      }
+      case Node(value, left, right) => {
+        if (cmp(keyValue._1)(value._1) < 0) Node(value, insert(left)(keyValue)(cmp), right)
+        else if (cmp(keyValue._1)(value._1) > 0) Node(value, left, insert(right)(keyValue)(cmp))
+        else Node(keyValue, left, right)
+      }
+  }
 
   def insertList[K, V]
     (seed: BST[K, V])(keyValues: List[(K, V)])(cmp: K => K => Int) =
     keyValues.foldLeft(seed)((tree, keyValue) => insert(tree)(keyValue)(cmp))
 
-  def lookup[K, V](t: BST[K, V])(key: K)(cmp: K => K => Int): Option[V] = ???
+  def lookup[K, V](t: BST[K, V])(key: K)(cmp: K => K => Int): Option[V] =
+  t match {
+    case Leaf => None
+    case Node(value, left, right) => {
+      if (cmp(key)(value._1) < 0) lookup(left)(key)(cmp)
+      else if (cmp(key)(value._1) > 0) lookup(right)(key)(cmp)
+      else Some(value._2)
+    }
+  }
 }
