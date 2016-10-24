@@ -1,4 +1,3 @@
-
 2016년 프로그래밍 원리
 -----
 
@@ -22,3 +21,8 @@
 ### [Submission](http://147.46.219.145:8101/)
 
 * submission 디렉토리를 통째로 압축 후 제출
+
+### 참고링크
+* 타입변수: Covariant, Contravariant [twitter.github.io](https://twitter.github.io/scala_school/ko/type-basics.html#variance) [블로그](http://changsuk.me/?p=2031)
+* subtype [블로그](http://jetzt.tistory.com/932)
+* record type [github issue tracker](https://github.com/snu-sf-class/pp201602/issues/62)
