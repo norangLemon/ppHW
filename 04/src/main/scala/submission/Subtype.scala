@@ -29,7 +29,9 @@ abstract class myClass {
    Find suitable common supertype of ty1 and ty2,
    and replace "Any" with that type.
    */
-  type commonTy = Any
+  type commonTy = {
+    def apply: { val a: A ; val c : C ; val e: E} => {val fst: B}
+  }
 
   /*
    Fill in the apply function here.
@@ -37,7 +39,7 @@ abstract class myClass {
    As a consequence, the output of this function might change with different x given.
    */
   def apply(x: commonTy, _a: A, _b: B, _c: C, _d: D, _e: E, _f: F, _g: G, _h: H) =
-    ???
+  x.apply(new {val a = _a;val c = _c;val e = _e})
 }
 
 object subtype extends App {
