@@ -4,10 +4,10 @@ import Data.DataBundle._
 object AbstractClass {
   object IterDictImpl {
     //Write empty IterDict
-    def empty[K, V](eq: K => K => Boolean): IterDict[K, V] = ???
+    def empty[K, V](eqFunc: K => K => Boolean): IterDict[K, V] = ???
   }
 
-  class IterDictImpl[K, V](eq: K => K => Boolean)(val data: List[(K, V)])
+  class IterDictImpl[K, V](eqFunc: K => K => Boolean)(val data: List[(K, V)])
       extends IterDict[K, V] {
 
     def getValue = ???
