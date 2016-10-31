@@ -14,6 +14,7 @@ object Subtype_new {
 
     type Func1 = {val a: A} => {val b: B}
     type Func2 = {val b: B} => {val a: A}
+    type Func = {} => {val a: A; val b : B}
 
     type Ty1 = {
       def apply: {val func: Func1; val c: C} => {val b: B; val d: D}
@@ -30,7 +31,7 @@ object Subtype_new {
      and replace "Any" with that type.
      */
     type CommonTy = {
-      def apply: {val func: {val a: A; val b: B} => AnyRef{}; val c: C; val e: E} => {val b: B}
+      def apply: {val func: Func; val c: C; val e: E} => {val b: B}
     }
 
     /*
@@ -39,8 +40,7 @@ object Subtype_new {
      As a consequence, the output of this function might change with different x given.
      */
     def apply(x: CommonTy, _a: A, _b: B, _c: C, _d: D, _e: E, _f: F, _g: G, _h: H) = {
-      val _func: {val a: A; val b: B} => AnyRef{} =
-        x => new AnyRef{}
+      val _func: Func = Any => new {val a = _a; val b =  _b}
       x.apply(new {val func = _func; val c = _c; val e = _e})
     }
   }
