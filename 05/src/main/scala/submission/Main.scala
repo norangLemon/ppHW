@@ -37,7 +37,7 @@ object AbstractClass {
     def add(k: K, v: V) : IterDict[K, V] ={
       def reset(k: K, v: V, data:List[(K, V)]): List[(K, V)] = {
         data match {
-          case (k1, v1) :: list if (k1 == k) => (k, v) :: list
+          case (k1, v1) :: list if eqFunc(k1)(k) => (k, v) :: list
           case (k1, v1) :: list => (k1, v1) :: reset(k, v, list)
         }
       }
@@ -55,7 +55,7 @@ object AbstractClass {
     //When there is no such key, return None.
     def find(k: K) : Option[V] =
     data match {
-      case (key, v) :: list => if (key == k) Some(v) else (new IterDictImpl(eqFunc)(list)).find(k)
+      case (key, v) :: list => if (eqFunc(key)(k)) Some(v) else (new IterDictImpl(eqFunc)(list)).find(k)
       case Nil => None
     }
   }
