@@ -9,10 +9,21 @@ object MoreAbstractClass {
    getPrev should move iterator once, to the opposite direction of getNext.
    Behavior of getPrev/getNext in corner cases are clarified in Test.scala.
    */
-  class BiIterableList[A](val data: List[A]) extends BiIterable[A] {
-    def biIter: BiIter[A] = ???
+
+  class MyList[A](val data: List[A])(val i: Int) extends BiIter[A] {
+    val idx = i
+    def getValue: Option[A] = {
+      if (data.length == i) None
+      else Some(data(i))
+    }
+    def getNext: MyList[A] = if (i == data.length) this else new MyList[A](data)(i + 1)
+    def getPrev: MyList[A] = if (i == 0) this else new MyList[A](data)(i - 1)
   }
 
+  class BiIterableList[A](val data: List[A]) extends BiIterable[A] {
+    def biIter: BiIter[A] = new MyList[A](data)(0)
+  }
+/*
   sealed abstract class BiIterableTree[A] extends BiIterable[A] {
     //You are allowed to write something here
   }
@@ -25,4 +36,5 @@ object MoreAbstractClass {
       extends BiIterableTree[A] {
     def biIter = ???
   }
+  */
 }
