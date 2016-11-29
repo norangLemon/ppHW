@@ -1,0 +1,5 @@
+var
+null
+return
+isInstanceOf
+asInstanceOf
