@@ -75,7 +75,7 @@ object DataBundle {
    Instance of this typeclass should satisfy the following laws:
    Associativity: op(op(a, b), c) = op(a, op(b, c))
    Commutativity: op(a, b) = op(b, a)
-   Identity: for all element a of type A, op(identity, a) = identity
+   Identity: for all element a of type A, op(identity, a) = a
    Inverse: for all element a of type A, op(a, inverse(a)) = identity
    */
   abstract class AddOp[A] {
@@ -90,7 +90,7 @@ object DataBundle {
    Instance of this typeclass should satisfy the following laws:
    Associativity: op(op(a, b), c) = op(a, op(b, c))
    Commutativity: op(a, b) = op(b, a)
-   Identity: for all element a of type A, op(identity, a) = identity
+   Identity: for all element a of type A, op(identity, a) = a
    */
   abstract class MultOp[A] {
     def op(a: A, b: A): A
