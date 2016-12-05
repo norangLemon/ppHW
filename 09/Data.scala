@@ -50,7 +50,7 @@ object OOP {
       lectureEvals.foldLeft(0.0)((s, i) => s + LectureEvalToDouble(i)) / lectureEvals.size
 
     override def prettyPrint() =
-      super.prettyPrint() + f": ${"Mean Lectuer Eval"}%20s = ${lectureEvalsMean}%.2f"
+      super.prettyPrint() + f": ${"Mean Lecture Eval"}%20s = ${lectureEvalsMean}%.2f"
   }
 
   class Student(_name: String, _ID: Int, _grade: List[Grade])
@@ -65,8 +65,9 @@ object OOP {
       super.prettyPrint() + f": ${"Mean Grade"}%20s = ${gradesMean}%.2f"
   }
 
-  def snuMemberUglyPrint(x: SNUMember) = println(">>>>" + x.prettyPrint)
+  def snuMemberUglyPrint(x: SNUMember) = ">>>>" + x.prettyPrint
+
 
   def snuMemberPrettyPrintAll(xs: List[SNUMember]) =
-    xs.foreach(x => println(x.prettyPrint))
+    xs.foldLeft("")((s, i) => s + i.prettyPrint + "\n")
 }

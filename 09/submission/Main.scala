@@ -6,7 +6,7 @@ import scala.language.implicitConversions
 object TOP {
   /*
   ...
-  */
+   */
 }
 
 object Main {
@@ -37,9 +37,9 @@ object Main {
     val kim = new Student("Yoonseung Kim", 3, List(A, A))
     val park = new SNUMember("Chulsoo Park", 4)
 
-    snuMemberUglyPrint(gil: SNUMember)
-    snuMemberUglyPrint(gil)
+    println(snuMemberUglyPrint(gil: SNUMember))
+    println(snuMemberUglyPrint(gil))
 
-    snuMemberPrettyPrintAll(List(gil, kwang, song, kim, park))
+    println(snuMemberPrettyPrintAll(List(gil, kwang, song, kim, park)))
   }
 }
