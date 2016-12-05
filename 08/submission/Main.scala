@@ -8,9 +8,17 @@ object TypeClass extends App {
    Real Numbers
    ***********/
 
-  implicit def realAddProxy: AddOp[Real] = ???
 
-  implicit def realMultProxy: MultOp[Real] = ???
+  implicit def realAddProxy: AddOp[Real] = new AddOp[Real] {
+    def op(a: Real, b: Real): Real = a + b;
+    val identity: Real = 0L;
+    def inverse(a: Real): Real = -1 * a;
+  }
+
+  implicit def realMultProxy: MultOp[Real] = new MultOp[Real] {
+    def op(a: Real, b: Real): Real = a * b;
+    val identity: Real = 1L;
+  }
 
   /***********
    Complex Numbers
@@ -20,16 +28,31 @@ object TypeClass extends App {
    ComplexNumber class and its companion object ported from hw07.
    */
   object Complex extends ComplexBasic {
-    def makeRectangular(real: Real, imaginary: Real): Complex = ???
-    def makePolar(magnitude: Real, angle: Real): Complex = ???
+    def makeRectangular(real: Real, imaginary: Real): Complex = {
+      val polar = ComplexPrivate.rectangularToPolar(real, imaginary);
+      new Complex(real, imaginary, polar._1, polar._2);
+    }
+    def makePolar(magnitude: Real, angle: Real): Complex = {
+      val rect = ComplexPrivate.polarToRectangular(magnitude, angle);
+      new Complex(rect._1, rect._2, magnitude, angle);
+    }
   }
 
   /*
    Typeclass instantiations.
    */
-  implicit def complexAddProxy: AddOp[Complex] = ???
+  implicit def complexAddProxy: AddOp[Complex] = new AddOp[Complex] {
+    def op(a: Complex, b: Complex): Complex
+      = Complex.makeRectangular(a.real+b.real, a.imaginary+b.imaginary);
+    val identity: Complex = Complex.makeRectangular(0L, 0L);
+    def inverse(a: Complex): Complex = Complex.makeRectangular(-1*a.real, -1*a.imaginary)
+  }
 
-  implicit def complexMultProxy: MultOp[Complex] = ???
+  implicit def complexMultProxy: MultOp[Complex] = new MultOp[Complex] {
+    override def op(a: Complex, b: Complex): Complex
+      = Complex.makePolar(a.magnitude * b.magnitude, ComplexPrivate.normalizeAngle(a.angle + b.angle))
+    override val identity: Complex = Complex.makeRectangular(1L, 0L)
+  }
 
   /***********
    Polynomials
@@ -39,12 +62,68 @@ object TypeClass extends App {
    In actual test, we may use types other than complex numbers.
    */
   object Polynomial {
-    def eval[A : MultOp : AddOp](poly: Polynomial[A])(a: A) : A = ???
+    def eval[A : MultOp : AddOp](poly: Polynomial[A])(a: A) : A = {
+      def calc[A : MultOp : AddOp](sum: A, pow: A, index: A, list: Polynomial[A]) : A
+         = list match {
+        case Nil => sum;
+        case e :: l => {
+          val newpow = implicitly[MultOp[A]].op(pow, index);
+          val this_ = implicitly[MultOp[A]].op(pow, e);
+          val sum_ = implicitly[AddOp[A]].op(sum, this_);
+          calc(sum_, newpow, index, l);
+        }
+      }
+      calc(implicitly[AddOp[A]].identity, implicitly[MultOp[A]].identity, a, poly);
+    }
   }
 
-  implicit def polynomialAddProxy[A : MultOp : AddOp]: AddOp[Polynomial[A]] = ???
+  implicit def polynomialAddProxy[A : MultOp : AddOp]: AddOp[Polynomial[A]] = new AddOp[Polynomial[A]] {
+    def op(a: Polynomial[A], b: Polynomial[A]): Polynomial[A] = {
+      def f(x: Polynomial[A], y: Polynomial[A], sum: Polynomial[A]): Polynomial[A] =
+      x match {
+        case Nil => y match {
+          case Nil => sum;
+          case _ => sum++y;
+        }
+        case hx :: tx => y match {
+          case Nil => sum++x;
+          case hy :: ty => f(tx, ty, sum :+ implicitly[AddOp[A]].op(hx, hy));
+        }
+      }
+      f(a, b, List[A]());
+    }
+    val identity: Polynomial[A] = List(implicitly[AddOp[A]].identity)
+    def inverse(a: Polynomial[A]): Polynomial[A] = {
+      def f(head: Polynomial[A], tail: Polynomial[A]): Polynomial[A]
+      = tail match {
+        case Nil => head;
+        case h :: t => f(head:+implicitly[AddOp[A]].inverse(h), t);
+      }
+      f(List[A](), a);
+    }
+  }
 
-  implicit def polynomialMultProxy[A : MultOp : AddOp]: MultOp[Polynomial[A]] = ???
+  implicit def polynomialMultProxy[A : MultOp : AddOp]: MultOp[Polynomial[A]] = new MultOp[Polynomial[A]] {
+    def op(a: Polynomial[A], b: Polynomial[A]): Polynomial[A] = {
+      def mono(in: Polynomial[A], x: A, out:Polynomial[A]): Polynomial[A] =
+      in match{
+        case Nil => out;
+        case h :: t => mono(t, x, out:+implicitly[MultOp[A]].op(h, x));
+      }
+
+      def f(x: Polynomial[A], y: Polynomial[A], out: Polynomial[A], prefix: Polynomial[A]) : Polynomial[A]
+      = y match {
+        case Nil => out;
+        case h :: t => {
+          val mono_mult = mono(prefix++x, h, List())
+          f(x, t, implicitly[AddOp[Polynomial[A]]].op(out, mono_mult), prefix:+implicitly[AddOp[A]].identity)
+        }
+      }
+
+      f(a, b, List(), List());
+    }
+    val identity: Polynomial[A] = List(implicitly[MultOp[A]].identity)
+  }
 
 
 
