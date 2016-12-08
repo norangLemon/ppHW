@@ -2,11 +2,92 @@ package submission
 import Data.DataBundle._
 import Data._
 import scala.language.implicitConversions
+import scala.language.higherKinds
 
 object TOP {
-  /*
-  ...
-   */
+
+  class SNUMember(val _name: String, val _ID: Int)
+
+  abstract class SNUMemberSig[S] {
+    def name(s: S): String
+    def ID(s: S): Int
+    def prettyPrint(s: S): String
+  }
+
+  implicit val SNUMember: SNUMemberSig[SNUMember] = new SNUMemberSig[SNUMember] {
+    def name(s: SNUMember): String = s._name
+    def ID(s: SNUMember): Int = s._ID
+    def prettyPrint(s: SNUMember) = f"${s._name}%15s  [${s._ID}%05d]"
+  }
+
+
+  class Professor(val _name: String, val _ID: Int, val _lectureEvals: List[LectureEval]) {
+    val parent: SNUMember = new SNUMember(_name, _ID)
+  }
+  implicit def ProfSNU(p: Professor): SNUMember = p.parent
+
+  abstract class ProfessorSig[P] {
+    val parent: SNUMemberSig[P]
+    def lectureEvals(p: P): List[LectureEval]
+    def lectureEvalsMean(p: P): Double
+  }
+  implicit def ProfSigSNUSig[P](implicit p: ProfessorSig[P]): SNUMemberSig[P] = p.parent
+
+  implicit val Professor: ProfessorSig[Professor] = new ProfessorSig[Professor] {
+    val parent: SNUMemberSig[Professor] = new SNUMemberSig[Professor] {
+      def name(p: Professor): String = p._name
+      def ID(p: Professor): Int = p._ID
+      def prettyPrint(p: Professor) =
+        SNUMember.prettyPrint(p.parent) + f": ${"Mean Lecture Eval"}%20s = ${lectureEvalsMean(p)}%.2f"
+    }
+    def lectureEvals(p: Professor): List[LectureEval] = p._lectureEvals
+    def lectureEvalsMean(t: Professor) =
+      lectureEvals(t).foldLeft(0.0)((s, i) => s + LectureEvalToDouble(i)) / lectureEvals(t).size
+  }
+
+
+  class Student(val _name: String, val _ID: Int, val _grade: List[Grade]) {
+    val parent: SNUMember = new SNUMember(_name, _ID)
+  }
+  implicit def StuSNU(s: Student): SNUMember = s.parent
+
+  abstract class StudentSig[S] {
+    val parent: SNUMemberSig[S]
+    def grades(s: S): List[Grade]
+    def gradesMean(s: S): Double
+  }
+  implicit def StuSigSNUSig[S](implicit s: StudentSig[S]): SNUMemberSig[S] = s.parent
+
+  implicit val Student: StudentSig[Student] = new StudentSig[Student] {
+    val parent: SNUMemberSig[Student] = new SNUMemberSig[Student] {
+      def name(s: Student): String = s._name
+      def ID(s: Student): Int = s._ID
+      def prettyPrint(s: Student) =
+        SNUMember.prettyPrint(s.parent) + f": ${"Mean Grade"}%20s = ${Student.gradesMean(s)}%.2f"
+    }
+    def grades(s: Student): List[Grade] = s._grade
+    def gradesMean(t: Student) =
+      grades(t).foldLeft(0.0)((s, i) => s + GradeToDouble(i)) / grades(t).size
+  }
+
+
+  abstract class SNUMemberDyn {
+    type SNUMemberT
+    val data : SNUMemberT
+    val proxy : SNUMemberSig[SNUMemberT]
+  }
+  implicit def toSNUMemberDyn[S: SNUMemberSig](s: S): SNUMemberDyn = new SNUMemberDyn {
+    type SNUMemberT = S
+    val data = s
+    val proxy = implicitly[SNUMemberSig[S]]
+  }
+
+
+  def snuMemberUglyPrint[S](x: S)(implicit proxy: SNUMemberSig[S]) = ">>>>" + proxy.prettyPrint(x)
+
+  def snuMemberPrettyPrintAll(xs: List[SNUMemberDyn]): String =
+    xs.foldLeft("")((s, i) => s + (i.proxy).prettyPrint(i.data) + "\n")
+
 }
 
 object Main {
@@ -27,8 +108,8 @@ object Main {
    It will be checked with grep.
    */
 
-  import OOP._
-  // import TOP._
+  // import OOP._
+  import TOP._
 
   def main(args: Array[String]): Unit = {
     val gil = new Professor("Gil Hur", 0, List(Good, Good))
